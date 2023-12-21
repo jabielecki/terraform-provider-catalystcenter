@@ -1,0 +1,18 @@
+---
+name: Discovery
+rest_endpoint: /dna/intent/api/v1/discovery
+get_rest_endpoint: /dna/intent/api/v1/discovery
+doc_category: Discovery
+attributes:
+  - model_name: cdpLevel
+    data_path: request
+    type: Int64
+    description: CDP level to which neighbor devices to be discovered
+    example: 10
+  - model_name: discoveryType
+    data_path: request
+    type: String
+    enum_values: [SINGLE, RANGE, MULTI RANGE, CDP, LLDP, CIDR]
+    mandatory: true
+    description: Type of Discovery.
+    example: RANGE
