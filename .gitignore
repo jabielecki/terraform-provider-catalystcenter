@@ -33,3 +33,8 @@ website/vendor
 
 # Keep windows files with windows line endings
 *.winfile eol=crlf
+go.work*
+GA-*.json
+Postman_Collections*.json
+terraform.d
+log*.txt
