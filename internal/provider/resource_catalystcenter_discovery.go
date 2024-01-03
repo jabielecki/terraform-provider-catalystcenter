@@ -72,19 +72,8 @@ func (r *DiscoveryResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 			},
 			"cdp_level": schema.Int64Attribute{
-				MarkdownDescription: helpers.NewAttributeDescription("CDP level to which neighbor devices to be discovered").String,
+				MarkdownDescription: helpers.NewAttributeDescription("CDP level to which neighbor devices to be discovered.").String,
 				Optional:            true,
-			},
-			"name": schema.StringAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("A name for the Discovery.").String,
-				Required:            true,
-			},
-			"preferred_ip_method": schema.StringAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("Preferred method for selecting management IP address.").AddStringEnumDescription("None", "UseLoopBack").String,
-				Optional:            true,
-				Validators: []validator.String{
-					stringvalidator.OneOf("None", "UseLoopBack"),
-				},
 			},
 			"discovery_type": schema.StringAttribute{
 				MarkdownDescription: helpers.NewAttributeDescription("Type of Discovery.").AddStringEnumDescription("SINGLE", "RANGE", "MULTI RANGE", "CDP", "LLDP", "CIDR").String,
@@ -93,12 +82,8 @@ func (r *DiscoveryResource) Schema(ctx context.Context, req resource.SchemaReque
 					stringvalidator.OneOf("SINGLE", "RANGE", "MULTI RANGE", "CDP", "LLDP", "CIDR"),
 				},
 			},
-			"ip_address_list": schema.StringAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("A string of IP address ranges to discover.").String,
-				Optional:            true,
-			},
-			"ip_filter_list": schema.ListAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("A list of IP address ranges to exclude from the Discovery.").String,
+			"enable_password_list": schema.ListAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("Enable Password of the devices to be discovered.").String,
 				ElementType:         types.StringType,
 				Optional:            true,
 			},
@@ -107,12 +92,118 @@ func (r *DiscoveryResource) Schema(ctx context.Context, req resource.SchemaReque
 				ElementType:         types.StringType,
 				Optional:            true,
 			},
-			"protocol_order": schema.StringAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("A string of comma-separated protocols.").String,
+			"http_read_credential": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("TODO.").String,
+				Optional:            true,
+			},
+			"http_write_credential": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("TODO.").String,
+				Optional:            true,
+			},
+			"ip_address_list": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("A string of IP address ranges to discover.  E.g.: '172.30.0.1' for SINGLE, CDP and LLDP; '172.30.0.1-172.30.0.4' for RANGE; '72.30.0.1-172.30.0.4,172.31.0.1-172.31.0.4' for MULTI RANGE; '172.30.0.1/20' for CIDR.").String,
+				Optional:            true,
+			},
+			"ip_filter_list": schema.ListAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("A list of IP address ranges to exclude from the discovery.").String,
+				ElementType:         types.StringType,
+				Optional:            true,
+			},
+			"lldp_level": schema.Int64Attribute{
+				MarkdownDescription: helpers.NewAttributeDescription("LLDP level to which neighbor devices to be discovered.").String,
+				Optional:            true,
+			},
+			"name": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("A name for the Discovery.").String,
 				Required:            true,
 			},
 			"netconf_port": schema.StringAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("Port number for netconf.").String,
+				MarkdownDescription: helpers.NewAttributeDescription("Port number for netconf as a string. It also requires valid SSH credentials to work.").String,
+				Optional:            true,
+			},
+			"password_list": schema.ListAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("Password of the devices to be discovered.").String,
+				ElementType:         types.StringType,
+				Optional:            true,
+			},
+			"preferred_ip_method": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("Preferred method for selecting management IP address.").AddStringEnumDescription("", "UseLoopBack").String,
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("", "UseLoopBack"),
+				},
+			},
+			"protocol_order": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("A string of comma-separated protocols (ssh/telnet), in the same order in which the connections to each device are attempted. E.g.: 'telnet': only telnet; 'ssh,telnet': ssh first, with telnet fallback.").String,
+				Required:            true,
+			},
+			"retry": schema.Int64Attribute{
+				MarkdownDescription: helpers.NewAttributeDescription("Number of times to try establishing connection to device.").String,
+				Optional:            true,
+			},
+			"snmp_auth_passphrase": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("Auth passphrase for SNMP.").String,
+				Optional:            true,
+			},
+			"snmp_auth_protocol": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("SNMP auth protocol.").AddStringEnumDescription("SHA", "MD5").String,
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("SHA", "MD5"),
+				},
+			},
+			"snmp_mode": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("Mode of SNMP.").AddStringEnumDescription("AUTHPRIV", "AUTHNOPRIV", "NOAUTHNOPRIV").String,
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("AUTHPRIV", "AUTHNOPRIV", "NOAUTHNOPRIV"),
+				},
+			},
+			"snmp_priv_passphrase": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("Passphrase for SNMP privacy.").String,
+				Optional:            true,
+			},
+			"snmp_priv_protocol": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("SNMP privacy protocol.").AddStringEnumDescription("DES", "AES128").String,
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("DES", "AES128"),
+				},
+			},
+			"snmp_ro_community": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("SNMP RO community of the devices to be discovered.").String,
+				Optional:            true,
+			},
+			"snmp_ro_community_desc": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("Description for snmp_ro_community.").String,
+				Optional:            true,
+			},
+			"snmp_rw_community": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("SNMP RW community of the devices to be discovered.").String,
+				Optional:            true,
+			},
+			"snmp_rw_community_desc": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("Description for snmp_rw_community").String,
+				Optional:            true,
+			},
+			"snmp_user_name": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("SNMP username of the devices to be discovered.").String,
+				Optional:            true,
+			},
+			"snmp_version": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("Version of SNMP").AddStringEnumDescription("v2", "v3").String,
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("v2", "v3"),
+				},
+			},
+			"timeout": schema.Int64Attribute{
+				MarkdownDescription: helpers.NewAttributeDescription("Time to wait for response in seconds, per each device.").String,
+				Optional:            true,
+			},
+			"user_name_list": schema.ListAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("Username of the devices to be discovered.").String,
+				ElementType:         types.StringType,
 				Optional:            true,
 			},
 		},

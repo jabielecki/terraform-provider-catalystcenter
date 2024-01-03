@@ -27,12 +27,31 @@ data "catalystcenter_discovery" "example" {
 
 ### Read-Only
 
-- `cdp_level` (Number) CDP level to which neighbor devices to be discovered
+- `cdp_level` (Number) CDP level to which neighbor devices to be discovered.
 - `discovery_type` (String) Type of Discovery.
+- `enable_password_list` (List of String) Enable Password of the devices to be discovered.
 - `global_credential_id_list` (List of String) A list of IDs, which must include SNMP and CLI credentials.
-- `ip_address_list` (String) A string of IP address ranges to discover.
-- `ip_filter_list` (List of String) A list of IP address ranges to exclude from the Discovery.
+- `http_read_credential` (String) TODO.
+- `http_write_credential` (String) TODO.
+- `ip_address_list` (String) A string of IP address ranges to discover.  E.g.: '172.30.0.1' for SINGLE, CDP and LLDP; '172.30.0.1-172.30.0.4' for RANGE; '72.30.0.1-172.30.0.4,172.31.0.1-172.31.0.4' for MULTI RANGE; '172.30.0.1/20' for CIDR.
+- `ip_filter_list` (List of String) A list of IP address ranges to exclude from the discovery.
+- `lldp_level` (Number) LLDP level to which neighbor devices to be discovered.
 - `name` (String) A name for the Discovery.
-- `netconf_port` (String) Port number for netconf.
+- `netconf_port` (String) Port number for netconf as a string. It also requires valid SSH credentials to work.
+- `password_list` (List of String) Password of the devices to be discovered.
 - `preferred_ip_method` (String) Preferred method for selecting management IP address.
-- `protocol_order` (String) A string of comma-separated protocols.
+- `protocol_order` (String) A string of comma-separated protocols (ssh/telnet), in the same order in which the connections to each device are attempted. E.g.: 'telnet': only telnet; 'ssh,telnet': ssh first, with telnet fallback.
+- `retry` (Number) Number of times to try establishing connection to device.
+- `snmp_auth_passphrase` (String) Auth passphrase for SNMP.
+- `snmp_auth_protocol` (String) SNMP auth protocol.
+- `snmp_mode` (String) Mode of SNMP.
+- `snmp_priv_passphrase` (String) Passphrase for SNMP privacy.
+- `snmp_priv_protocol` (String) SNMP privacy protocol.
+- `snmp_ro_community` (String) SNMP RO community of the devices to be discovered.
+- `snmp_ro_community_desc` (String) Description for snmp_ro_community.
+- `snmp_rw_community` (String) SNMP RW community of the devices to be discovered.
+- `snmp_rw_community_desc` (String) Description for snmp_rw_community
+- `snmp_user_name` (String) SNMP username of the devices to be discovered.
+- `snmp_version` (String) Version of SNMP
+- `timeout` (Number) Time to wait for response in seconds, per each device.
+- `user_name_list` (List of String) Username of the devices to be discovered.

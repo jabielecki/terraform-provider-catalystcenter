@@ -64,27 +64,15 @@ func (d *DiscoveryDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				Required:            true,
 			},
 			"cdp_level": schema.Int64Attribute{
-				MarkdownDescription: "CDP level to which neighbor devices to be discovered",
-				Computed:            true,
-			},
-			"name": schema.StringAttribute{
-				MarkdownDescription: "A name for the Discovery.",
-				Computed:            true,
-			},
-			"preferred_ip_method": schema.StringAttribute{
-				MarkdownDescription: "Preferred method for selecting management IP address.",
+				MarkdownDescription: "CDP level to which neighbor devices to be discovered.",
 				Computed:            true,
 			},
 			"discovery_type": schema.StringAttribute{
 				MarkdownDescription: "Type of Discovery.",
 				Computed:            true,
 			},
-			"ip_address_list": schema.StringAttribute{
-				MarkdownDescription: "A string of IP address ranges to discover.",
-				Computed:            true,
-			},
-			"ip_filter_list": schema.ListAttribute{
-				MarkdownDescription: "A list of IP address ranges to exclude from the Discovery.",
+			"enable_password_list": schema.ListAttribute{
+				MarkdownDescription: "Enable Password of the devices to be discovered.",
 				ElementType:         types.StringType,
 				Computed:            true,
 			},
@@ -93,12 +81,103 @@ func (d *DiscoveryDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				ElementType:         types.StringType,
 				Computed:            true,
 			},
-			"protocol_order": schema.StringAttribute{
-				MarkdownDescription: "A string of comma-separated protocols.",
+			"http_read_credential": schema.StringAttribute{
+				MarkdownDescription: "TODO.",
+				Computed:            true,
+			},
+			"http_write_credential": schema.StringAttribute{
+				MarkdownDescription: "TODO.",
+				Computed:            true,
+			},
+			"ip_address_list": schema.StringAttribute{
+				MarkdownDescription: "A string of IP address ranges to discover.  E.g.: '172.30.0.1' for SINGLE, CDP and LLDP; '172.30.0.1-172.30.0.4' for RANGE; '72.30.0.1-172.30.0.4,172.31.0.1-172.31.0.4' for MULTI RANGE; '172.30.0.1/20' for CIDR.",
+				Computed:            true,
+			},
+			"ip_filter_list": schema.ListAttribute{
+				MarkdownDescription: "A list of IP address ranges to exclude from the discovery.",
+				ElementType:         types.StringType,
+				Computed:            true,
+			},
+			"lldp_level": schema.Int64Attribute{
+				MarkdownDescription: "LLDP level to which neighbor devices to be discovered.",
+				Computed:            true,
+			},
+			"name": schema.StringAttribute{
+				MarkdownDescription: "A name for the Discovery.",
 				Computed:            true,
 			},
 			"netconf_port": schema.StringAttribute{
-				MarkdownDescription: "Port number for netconf.",
+				MarkdownDescription: "Port number for netconf as a string. It also requires valid SSH credentials to work.",
+				Computed:            true,
+			},
+			"password_list": schema.ListAttribute{
+				MarkdownDescription: "Password of the devices to be discovered.",
+				ElementType:         types.StringType,
+				Computed:            true,
+			},
+			"preferred_ip_method": schema.StringAttribute{
+				MarkdownDescription: "Preferred method for selecting management IP address.",
+				Computed:            true,
+			},
+			"protocol_order": schema.StringAttribute{
+				MarkdownDescription: "A string of comma-separated protocols (ssh/telnet), in the same order in which the connections to each device are attempted. E.g.: 'telnet': only telnet; 'ssh,telnet': ssh first, with telnet fallback.",
+				Computed:            true,
+			},
+			"retry": schema.Int64Attribute{
+				MarkdownDescription: "Number of times to try establishing connection to device.",
+				Computed:            true,
+			},
+			"snmp_auth_passphrase": schema.StringAttribute{
+				MarkdownDescription: "Auth passphrase for SNMP.",
+				Computed:            true,
+			},
+			"snmp_auth_protocol": schema.StringAttribute{
+				MarkdownDescription: "SNMP auth protocol.",
+				Computed:            true,
+			},
+			"snmp_mode": schema.StringAttribute{
+				MarkdownDescription: "Mode of SNMP.",
+				Computed:            true,
+			},
+			"snmp_priv_passphrase": schema.StringAttribute{
+				MarkdownDescription: "Passphrase for SNMP privacy.",
+				Computed:            true,
+			},
+			"snmp_priv_protocol": schema.StringAttribute{
+				MarkdownDescription: "SNMP privacy protocol.",
+				Computed:            true,
+			},
+			"snmp_ro_community": schema.StringAttribute{
+				MarkdownDescription: "SNMP RO community of the devices to be discovered.",
+				Computed:            true,
+			},
+			"snmp_ro_community_desc": schema.StringAttribute{
+				MarkdownDescription: "Description for snmp_ro_community.",
+				Computed:            true,
+			},
+			"snmp_rw_community": schema.StringAttribute{
+				MarkdownDescription: "SNMP RW community of the devices to be discovered.",
+				Computed:            true,
+			},
+			"snmp_rw_community_desc": schema.StringAttribute{
+				MarkdownDescription: "Description for snmp_rw_community",
+				Computed:            true,
+			},
+			"snmp_user_name": schema.StringAttribute{
+				MarkdownDescription: "SNMP username of the devices to be discovered.",
+				Computed:            true,
+			},
+			"snmp_version": schema.StringAttribute{
+				MarkdownDescription: "Version of SNMP",
+				Computed:            true,
+			},
+			"timeout": schema.Int64Attribute{
+				MarkdownDescription: "Time to wait for response in seconds, per each device.",
+				Computed:            true,
+			},
+			"user_name_list": schema.ListAttribute{
+				MarkdownDescription: "Username of the devices to be discovered.",
+				ElementType:         types.StringType,
 				Computed:            true,
 			},
 		},

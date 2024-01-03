@@ -1,11 +1,30 @@
 resource "catalystcenter_discovery" "example" {
   cdp_level                 = 10
-  name                      = "disco42"
-  preferred_ip_method       = "UseLoopBack"
   discovery_type            = "RANGE"
-  ip_address_list           = "192.168.0.1-192.168.0.99"
-  ip_filter_list            = ["192.168.8.8-192.168.8.8"]
+  enable_password_list      = [""]
   global_credential_id_list = [""]
+  http_read_credential      = ""
+  http_write_credential     = ""
+  ip_address_list           = "192.168.0.1-192.168.0.99"
+  ip_filter_list            = ["192.168.0.8-192.168.0.8"]
+  lldp_level                = 10
+  name                      = "disco42"
+  netconf_port              = "830"
+  password_list             = [""]
+  preferred_ip_method       = "UseLoopBack"
   protocol_order            = "ssh"
-  netconf_port              = ""
+  retry                     = 3
+  snmp_auth_passphrase      = ""
+  snmp_auth_protocol        = ""
+  snmp_mode                 = ""
+  snmp_priv_passphrase      = ""
+  snmp_priv_protocol        = ""
+  snmp_ro_community         = ""
+  snmp_ro_community_desc    = ""
+  snmp_rw_community         = ""
+  snmp_rw_community_desc    = ""
+  snmp_user_name            = ""
+  snmp_version              = ""
+  timeout                   = 5
+  user_name_list            = [""]
 }
