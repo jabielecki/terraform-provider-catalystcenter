@@ -9,6 +9,18 @@ attributes:
     type: Int64
     description: CDP level to which neighbor devices to be discovered
     example: 10
+  - model_name: name
+    data_path: request
+    type: String
+    mandatory: true
+    description: A name for the Discovery.
+    example: disco42
+  - model_name: preferredIpMethod
+    data_path: request
+    type: String
+    enum_values: [None, UseLoopBack]
+    description: Preferred method for selecting management IP address.
+    example: UseLoopBack
   - model_name: discoveryType
     data_path: request
     type: String
@@ -16,3 +28,44 @@ attributes:
     mandatory: true
     description: Type of Discovery.
     example: RANGE
+  - model_name: ipAddressList
+    data_path: request
+    type: String
+    description: A string of IP address ranges to discover.
+    example: 192.168.0.1-192.168.0.99
+  - model_name: ipFilterList
+    data_path: request
+    type: StringList
+    description: A list of IP address ranges to exclude from the Discovery.
+    example: 192.168.0.8-192.168.0.8
+  - model_name: globalCredentialIdList
+    data_path: request
+    type: StringList
+    description: A list of IDs, which must include SNMP and CLI credentials.
+    # write_only: true
+    # exclude_test: true
+  - model_name: protocolOrder
+    data_path: request
+    type: String
+    mandatory: true
+    description: A string of comma-separated protocols.
+    example: ssh
+  - model_name: netconfPort
+    data_path: request
+    type: String
+    description: Port number for netconf.
+    example: 830
+
+
+  # - model_name: globalCliCred
+  #   data_path: request
+  #   type: String
+  #   mandatory: true
+  #   description: The CLI username to use for every device under discovery.
+  #   example: user42
+  # - model_name: globalSnmpCred
+  #   data_path: request
+  #   type: String
+  #   mandatory: true
+  #   description: The SNMP credential to use for every device under discovery.
+  #   example: SNMP-RW

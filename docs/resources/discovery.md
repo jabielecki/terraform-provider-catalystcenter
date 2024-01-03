@@ -14,8 +14,15 @@ This resource can manage a Discovery.
 
 ```terraform
 resource "catalystcenter_discovery" "example" {
-  cdp_level      = 10
-  discovery_type = "RANGE"
+  cdp_level                 = 10
+  name                      = "disco42"
+  preferred_ip_method       = "UseLoopBack"
+  discovery_type            = "RANGE"
+  ip_address_list           = "192.168.0.1-192.168.0.99"
+  ip_filter_list            = ["192.168.8.8-192.168.8.8"]
+  global_credential_id_list = [""]
+  protocol_order            = "ssh"
+  netconf_port              = ""
 }
 ```
 
@@ -26,10 +33,18 @@ resource "catalystcenter_discovery" "example" {
 
 - `discovery_type` (String) Type of Discovery.
   - Choices: `SINGLE`, `RANGE`, `MULTI RANGE`, `CDP`, `LLDP`, `CIDR`
+- `name` (String) A name for the Discovery.
+- `protocol_order` (String) A string of comma-separated protocols.
 
 ### Optional
 
 - `cdp_level` (Number) CDP level to which neighbor devices to be discovered
+- `global_credential_id_list` (List of String) A list of IDs, which must include SNMP and CLI credentials.
+- `ip_address_list` (String) A string of IP address ranges to discover.
+- `ip_filter_list` (List of String) A list of IP address ranges to exclude from the Discovery.
+- `netconf_port` (String) Port number for netconf.
+- `preferred_ip_method` (String) Preferred method for selecting management IP address.
+  - Choices: `None`, `UseLoopBack`
 
 ### Read-Only
 

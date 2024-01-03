@@ -23,6 +23,7 @@ package provider
 import (
 	"context"
 
+	"github.com/CiscoDevNet/terraform-provider-catalystcenter/internal/provider/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
@@ -32,9 +33,16 @@ import (
 
 //template:begin types
 type Discovery struct {
-	Id            types.String `tfsdk:"id"`
-	CdpLevel      types.Int64  `tfsdk:"cdp_level"`
-	DiscoveryType types.String `tfsdk:"discovery_type"`
+	Id                     types.String `tfsdk:"id"`
+	CdpLevel               types.Int64  `tfsdk:"cdp_level"`
+	Name                   types.String `tfsdk:"name"`
+	PreferredIpMethod      types.String `tfsdk:"preferred_ip_method"`
+	DiscoveryType          types.String `tfsdk:"discovery_type"`
+	IpAddressList          types.String `tfsdk:"ip_address_list"`
+	IpFilterList           types.List   `tfsdk:"ip_filter_list"`
+	GlobalCredentialIdList types.List   `tfsdk:"global_credential_id_list"`
+	ProtocolOrder          types.String `tfsdk:"protocol_order"`
+	NetconfPort            types.String `tfsdk:"netconf_port"`
 }
 
 //template:end types
@@ -52,8 +60,33 @@ func (data Discovery) toBody(ctx context.Context, state Discovery) string {
 	if !data.CdpLevel.IsNull() {
 		body, _ = sjson.Set(body, "request.cdpLevel", data.CdpLevel.ValueInt64())
 	}
+	if !data.Name.IsNull() {
+		body, _ = sjson.Set(body, "request.name", data.Name.ValueString())
+	}
+	if !data.PreferredIpMethod.IsNull() {
+		body, _ = sjson.Set(body, "request.preferredIpMethod", data.PreferredIpMethod.ValueString())
+	}
 	if !data.DiscoveryType.IsNull() {
 		body, _ = sjson.Set(body, "request.discoveryType", data.DiscoveryType.ValueString())
+	}
+	if !data.IpAddressList.IsNull() {
+		body, _ = sjson.Set(body, "request.ipAddressList", data.IpAddressList.ValueString())
+	}
+	if !data.IpFilterList.IsNull() {
+		var values []string
+		data.IpFilterList.ElementsAs(ctx, &values, false)
+		body, _ = sjson.Set(body, "request.ipFilterList", values)
+	}
+	if !data.GlobalCredentialIdList.IsNull() {
+		var values []string
+		data.GlobalCredentialIdList.ElementsAs(ctx, &values, false)
+		body, _ = sjson.Set(body, "request.globalCredentialIdList", values)
+	}
+	if !data.ProtocolOrder.IsNull() {
+		body, _ = sjson.Set(body, "request.protocolOrder", data.ProtocolOrder.ValueString())
+	}
+	if !data.NetconfPort.IsNull() {
+		body, _ = sjson.Set(body, "request.netconfPort", data.NetconfPort.ValueString())
 	}
 	return body
 }
@@ -67,10 +100,45 @@ func (data *Discovery) fromBody(ctx context.Context, res gjson.Result) {
 	} else {
 		data.CdpLevel = types.Int64Null()
 	}
+	if value := res.Get("request.name"); value.Exists() {
+		data.Name = types.StringValue(value.String())
+	} else {
+		data.Name = types.StringNull()
+	}
+	if value := res.Get("request.preferredIpMethod"); value.Exists() {
+		data.PreferredIpMethod = types.StringValue(value.String())
+	} else {
+		data.PreferredIpMethod = types.StringNull()
+	}
 	if value := res.Get("request.discoveryType"); value.Exists() {
 		data.DiscoveryType = types.StringValue(value.String())
 	} else {
 		data.DiscoveryType = types.StringNull()
+	}
+	if value := res.Get("request.ipAddressList"); value.Exists() {
+		data.IpAddressList = types.StringValue(value.String())
+	} else {
+		data.IpAddressList = types.StringNull()
+	}
+	if value := res.Get("request.ipFilterList"); value.Exists() {
+		data.IpFilterList = helpers.GetStringList(value.Array())
+	} else {
+		data.IpFilterList = types.ListNull(types.StringType)
+	}
+	if value := res.Get("request.globalCredentialIdList"); value.Exists() {
+		data.GlobalCredentialIdList = helpers.GetStringList(value.Array())
+	} else {
+		data.GlobalCredentialIdList = types.ListNull(types.StringType)
+	}
+	if value := res.Get("request.protocolOrder"); value.Exists() {
+		data.ProtocolOrder = types.StringValue(value.String())
+	} else {
+		data.ProtocolOrder = types.StringNull()
+	}
+	if value := res.Get("request.netconfPort"); value.Exists() {
+		data.NetconfPort = types.StringValue(value.String())
+	} else {
+		data.NetconfPort = types.StringNull()
 	}
 }
 
@@ -83,10 +151,45 @@ func (data *Discovery) updateFromBody(ctx context.Context, res gjson.Result) {
 	} else {
 		data.CdpLevel = types.Int64Null()
 	}
+	if value := res.Get("request.name"); value.Exists() && !data.Name.IsNull() {
+		data.Name = types.StringValue(value.String())
+	} else {
+		data.Name = types.StringNull()
+	}
+	if value := res.Get("request.preferredIpMethod"); value.Exists() && !data.PreferredIpMethod.IsNull() {
+		data.PreferredIpMethod = types.StringValue(value.String())
+	} else {
+		data.PreferredIpMethod = types.StringNull()
+	}
 	if value := res.Get("request.discoveryType"); value.Exists() && !data.DiscoveryType.IsNull() {
 		data.DiscoveryType = types.StringValue(value.String())
 	} else {
 		data.DiscoveryType = types.StringNull()
+	}
+	if value := res.Get("request.ipAddressList"); value.Exists() && !data.IpAddressList.IsNull() {
+		data.IpAddressList = types.StringValue(value.String())
+	} else {
+		data.IpAddressList = types.StringNull()
+	}
+	if value := res.Get("request.ipFilterList"); value.Exists() && !data.IpFilterList.IsNull() {
+		data.IpFilterList = helpers.GetStringList(value.Array())
+	} else {
+		data.IpFilterList = types.ListNull(types.StringType)
+	}
+	if value := res.Get("request.globalCredentialIdList"); value.Exists() && !data.GlobalCredentialIdList.IsNull() {
+		data.GlobalCredentialIdList = helpers.GetStringList(value.Array())
+	} else {
+		data.GlobalCredentialIdList = types.ListNull(types.StringType)
+	}
+	if value := res.Get("request.protocolOrder"); value.Exists() && !data.ProtocolOrder.IsNull() {
+		data.ProtocolOrder = types.StringValue(value.String())
+	} else {
+		data.ProtocolOrder = types.StringNull()
+	}
+	if value := res.Get("request.netconfPort"); value.Exists() && !data.NetconfPort.IsNull() {
+		data.NetconfPort = types.StringValue(value.String())
+	} else {
+		data.NetconfPort = types.StringNull()
 	}
 }
 

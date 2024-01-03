@@ -32,7 +32,14 @@ import (
 func TestAccDataSourceCcDiscovery(t *testing.T) {
 	var checks []resource.TestCheckFunc
 	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "cdp_level", "10"))
+	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "name", "disco42"))
+	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "preferred_ip_method", "UseLoopBack"))
 	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "discovery_type", "RANGE"))
+	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "ip_address_list", "192.168.0.1-192.168.0.99"))
+	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "ip_filter_list.0", "192.168.8.8-192.168.8.8"))
+	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "global_credential_id_list.0", ""))
+	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "protocol_order", "ssh"))
+	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "netconf_port", ""))
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -54,7 +61,14 @@ func TestAccDataSourceCcDiscovery(t *testing.T) {
 func testAccDataSourceCcDiscoveryConfig() string {
 	config := `resource "catalystcenter_discovery" "test" {` + "\n"
 	config += `	cdp_level = 10` + "\n"
+	config += `	name = "disco42"` + "\n"
+	config += `	preferred_ip_method = "UseLoopBack"` + "\n"
 	config += `	discovery_type = "RANGE"` + "\n"
+	config += `	ip_address_list = "192.168.0.1-192.168.0.99"` + "\n"
+	config += `	ip_filter_list = ["192.168.8.8-192.168.8.8"]` + "\n"
+	config += `	global_credential_id_list = [""]` + "\n"
+	config += `	protocol_order = "ssh"` + "\n"
+	config += `	netconf_port = ""` + "\n"
 	config += `}` + "\n"
 
 	config += `

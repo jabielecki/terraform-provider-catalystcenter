@@ -29,3 +29,10 @@ data "catalystcenter_discovery" "example" {
 
 - `cdp_level` (Number) CDP level to which neighbor devices to be discovered
 - `discovery_type` (String) Type of Discovery.
+- `global_credential_id_list` (List of String) A list of IDs, which must include SNMP and CLI credentials.
+- `ip_address_list` (String) A string of IP address ranges to discover.
+- `ip_filter_list` (List of String) A list of IP address ranges to exclude from the Discovery.
+- `name` (String) A name for the Discovery.
+- `netconf_port` (String) Port number for netconf.
+- `preferred_ip_method` (String) Preferred method for selecting management IP address.
+- `protocol_order` (String) A string of comma-separated protocols.

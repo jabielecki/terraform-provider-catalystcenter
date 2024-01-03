@@ -26,6 +26,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	cc "github.com/netascode/go-catalystcenter"
 )
@@ -66,8 +67,38 @@ func (d *DiscoveryDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				MarkdownDescription: "CDP level to which neighbor devices to be discovered",
 				Computed:            true,
 			},
+			"name": schema.StringAttribute{
+				MarkdownDescription: "A name for the Discovery.",
+				Computed:            true,
+			},
+			"preferred_ip_method": schema.StringAttribute{
+				MarkdownDescription: "Preferred method for selecting management IP address.",
+				Computed:            true,
+			},
 			"discovery_type": schema.StringAttribute{
 				MarkdownDescription: "Type of Discovery.",
+				Computed:            true,
+			},
+			"ip_address_list": schema.StringAttribute{
+				MarkdownDescription: "A string of IP address ranges to discover.",
+				Computed:            true,
+			},
+			"ip_filter_list": schema.ListAttribute{
+				MarkdownDescription: "A list of IP address ranges to exclude from the Discovery.",
+				ElementType:         types.StringType,
+				Computed:            true,
+			},
+			"global_credential_id_list": schema.ListAttribute{
+				MarkdownDescription: "A list of IDs, which must include SNMP and CLI credentials.",
+				ElementType:         types.StringType,
+				Computed:            true,
+			},
+			"protocol_order": schema.StringAttribute{
+				MarkdownDescription: "A string of comma-separated protocols.",
+				Computed:            true,
+			},
+			"netconf_port": schema.StringAttribute{
+				MarkdownDescription: "Port number for netconf.",
 				Computed:            true,
 			},
 		},

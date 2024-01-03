@@ -33,6 +33,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	cc "github.com/netascode/go-catalystcenter"
 )
@@ -74,12 +75,45 @@ func (r *DiscoveryResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: helpers.NewAttributeDescription("CDP level to which neighbor devices to be discovered").String,
 				Optional:            true,
 			},
+			"name": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("A name for the Discovery.").String,
+				Required:            true,
+			},
+			"preferred_ip_method": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("Preferred method for selecting management IP address.").AddStringEnumDescription("None", "UseLoopBack").String,
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("None", "UseLoopBack"),
+				},
+			},
 			"discovery_type": schema.StringAttribute{
 				MarkdownDescription: helpers.NewAttributeDescription("Type of Discovery.").AddStringEnumDescription("SINGLE", "RANGE", "MULTI RANGE", "CDP", "LLDP", "CIDR").String,
 				Required:            true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("SINGLE", "RANGE", "MULTI RANGE", "CDP", "LLDP", "CIDR"),
 				},
+			},
+			"ip_address_list": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("A string of IP address ranges to discover.").String,
+				Optional:            true,
+			},
+			"ip_filter_list": schema.ListAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("A list of IP address ranges to exclude from the Discovery.").String,
+				ElementType:         types.StringType,
+				Optional:            true,
+			},
+			"global_credential_id_list": schema.ListAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("A list of IDs, which must include SNMP and CLI credentials.").String,
+				ElementType:         types.StringType,
+				Optional:            true,
+			},
+			"protocol_order": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("A string of comma-separated protocols.").String,
+				Required:            true,
+			},
+			"netconf_port": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("Port number for netconf.").String,
+				Optional:            true,
 			},
 		},
 	}
