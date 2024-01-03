@@ -64,7 +64,7 @@ func (d *DiscoveryDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				Required:            true,
 			},
 			"cdp_level": schema.Int64Attribute{
-				MarkdownDescription: "CDP level to which neighbor devices to be discovered.",
+				MarkdownDescription: "CDP level is the number of hops between neighbor devices.",
 				Computed:            true,
 			},
 			"discovery_type": schema.StringAttribute{
@@ -72,21 +72,21 @@ func (d *DiscoveryDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				Computed:            true,
 			},
 			"enable_password_list": schema.ListAttribute{
-				MarkdownDescription: "Enable Password of the devices to be discovered.",
+				MarkdownDescription: "",
 				ElementType:         types.StringType,
 				Computed:            true,
 			},
 			"global_credential_id_list": schema.ListAttribute{
-				MarkdownDescription: "A list of IDs, which must include SNMP and CLI credentials.",
+				MarkdownDescription: "A list of IDs, which must include SNMP credential and CLI credential.",
 				ElementType:         types.StringType,
 				Computed:            true,
 			},
 			"http_read_credential": schema.StringAttribute{
-				MarkdownDescription: "TODO.",
+				MarkdownDescription: "",
 				Computed:            true,
 			},
 			"http_write_credential": schema.StringAttribute{
-				MarkdownDescription: "TODO.",
+				MarkdownDescription: "",
 				Computed:            true,
 			},
 			"ip_address_list": schema.StringAttribute{
@@ -107,11 +107,11 @@ func (d *DiscoveryDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				Computed:            true,
 			},
 			"netconf_port": schema.StringAttribute{
-				MarkdownDescription: "Port number for netconf as a string. It also requires valid SSH credentials to work.",
+				MarkdownDescription: "Port number for netconf as a string. It requires valid SSH credentials to work.",
 				Computed:            true,
 			},
 			"password_list": schema.ListAttribute{
-				MarkdownDescription: "Password of the devices to be discovered.",
+				MarkdownDescription: "",
 				ElementType:         types.StringType,
 				Computed:            true,
 			},
@@ -124,7 +124,7 @@ func (d *DiscoveryDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				Computed:            true,
 			},
 			"retry": schema.Int64Attribute{
-				MarkdownDescription: "Number of times to try establishing connection to device.",
+				MarkdownDescription: "Number of times to try establishing SSH connection to a device.",
 				Computed:            true,
 			},
 			"snmp_auth_passphrase": schema.StringAttribute{
@@ -136,15 +136,15 @@ func (d *DiscoveryDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				Computed:            true,
 			},
 			"snmp_mode": schema.StringAttribute{
-				MarkdownDescription: "Mode of SNMP.",
+				MarkdownDescription: "",
 				Computed:            true,
 			},
 			"snmp_priv_passphrase": schema.StringAttribute{
-				MarkdownDescription: "Passphrase for SNMP privacy.",
+				MarkdownDescription: "",
 				Computed:            true,
 			},
 			"snmp_priv_protocol": schema.StringAttribute{
-				MarkdownDescription: "SNMP privacy protocol.",
+				MarkdownDescription: "",
 				Computed:            true,
 			},
 			"snmp_ro_community": schema.StringAttribute{
@@ -168,15 +168,15 @@ func (d *DiscoveryDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				Computed:            true,
 			},
 			"snmp_version": schema.StringAttribute{
-				MarkdownDescription: "Version of SNMP",
+				MarkdownDescription: "SNMP version",
 				Computed:            true,
 			},
 			"timeout": schema.Int64Attribute{
-				MarkdownDescription: "Time to wait for response in seconds, per each device.",
+				MarkdownDescription: "Number of seconds to wait for each SSH connection to a device.",
 				Computed:            true,
 			},
 			"user_name_list": schema.ListAttribute{
-				MarkdownDescription: "Username of the devices to be discovered.",
+				MarkdownDescription: "",
 				ElementType:         types.StringType,
 				Computed:            true,
 			},

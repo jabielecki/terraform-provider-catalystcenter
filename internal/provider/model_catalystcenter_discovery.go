@@ -240,7 +240,7 @@ func (data *Discovery) fromBody(ctx context.Context, res gjson.Result) {
 	if value := res.Get("preferredIpMethod"); value.Exists() {
 		data.PreferredIpMethod = types.StringValue(value.String())
 	} else {
-		data.PreferredIpMethod = types.StringNull()
+		data.PreferredIpMethod = types.StringValue("None")
 	}
 	if value := res.Get("protocolOrder"); value.Exists() {
 		data.ProtocolOrder = types.StringValue(value.String())
@@ -385,7 +385,7 @@ func (data *Discovery) updateFromBody(ctx context.Context, res gjson.Result) {
 	}
 	if value := res.Get("preferredIpMethod"); value.Exists() && !data.PreferredIpMethod.IsNull() {
 		data.PreferredIpMethod = types.StringValue(value.String())
-	} else {
+	} else if data.PreferredIpMethod.ValueString() != "None" {
 		data.PreferredIpMethod = types.StringNull()
 	}
 	if value := res.Get("protocolOrder"); value.Exists() && !data.ProtocolOrder.IsNull() {

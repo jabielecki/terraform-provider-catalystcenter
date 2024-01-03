@@ -38,7 +38,7 @@ func TestAccDataSourceCcDiscovery(t *testing.T) {
 	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "http_read_credential", ""))
 	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "http_write_credential", ""))
 	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "ip_address_list", "192.168.0.1-192.168.0.99"))
-	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "ip_filter_list.0", "192.168.0.8-192.168.0.8"))
+	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "ip_filter_list.0", ""))
 	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "lldp_level", "10"))
 	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "name", "disco42"))
 	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_discovery.test", "netconf_port", "830"))
@@ -86,7 +86,7 @@ func testAccDataSourceCcDiscoveryConfig() string {
 	config += `	http_read_credential = ""` + "\n"
 	config += `	http_write_credential = ""` + "\n"
 	config += `	ip_address_list = "192.168.0.1-192.168.0.99"` + "\n"
-	config += `	ip_filter_list = ["192.168.0.8-192.168.0.8"]` + "\n"
+	config += `	ip_filter_list = [""]` + "\n"
 	config += `	lldp_level = 10` + "\n"
 	config += `	name = "disco42"` + "\n"
 	config += `	netconf_port = "830"` + "\n"

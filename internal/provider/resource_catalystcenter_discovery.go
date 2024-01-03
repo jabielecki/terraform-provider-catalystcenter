@@ -31,6 +31,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -72,7 +73,7 @@ func (r *DiscoveryResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 			},
 			"cdp_level": schema.Int64Attribute{
-				MarkdownDescription: helpers.NewAttributeDescription("CDP level to which neighbor devices to be discovered.").String,
+				MarkdownDescription: helpers.NewAttributeDescription("CDP level is the number of hops between neighbor devices.").String,
 				Optional:            true,
 			},
 			"discovery_type": schema.StringAttribute{
@@ -83,21 +84,21 @@ func (r *DiscoveryResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 			},
 			"enable_password_list": schema.ListAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("Enable Password of the devices to be discovered.").String,
+				MarkdownDescription: helpers.NewAttributeDescription("").String,
 				ElementType:         types.StringType,
 				Optional:            true,
 			},
 			"global_credential_id_list": schema.ListAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("A list of IDs, which must include SNMP and CLI credentials.").String,
+				MarkdownDescription: helpers.NewAttributeDescription("A list of IDs, which must include SNMP credential and CLI credential.").String,
 				ElementType:         types.StringType,
 				Optional:            true,
 			},
 			"http_read_credential": schema.StringAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("TODO.").String,
+				MarkdownDescription: helpers.NewAttributeDescription("").String,
 				Optional:            true,
 			},
 			"http_write_credential": schema.StringAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("TODO.").String,
+				MarkdownDescription: helpers.NewAttributeDescription("").String,
 				Optional:            true,
 			},
 			"ip_address_list": schema.StringAttribute{
@@ -118,27 +119,29 @@ func (r *DiscoveryResource) Schema(ctx context.Context, req resource.SchemaReque
 				Required:            true,
 			},
 			"netconf_port": schema.StringAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("Port number for netconf as a string. It also requires valid SSH credentials to work.").String,
+				MarkdownDescription: helpers.NewAttributeDescription("Port number for netconf as a string. It requires valid SSH credentials to work.").String,
 				Optional:            true,
 			},
 			"password_list": schema.ListAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("Password of the devices to be discovered.").String,
+				MarkdownDescription: helpers.NewAttributeDescription("").String,
 				ElementType:         types.StringType,
 				Optional:            true,
 			},
 			"preferred_ip_method": schema.StringAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("Preferred method for selecting management IP address.").AddStringEnumDescription("", "UseLoopBack").String,
+				MarkdownDescription: helpers.NewAttributeDescription("Preferred method for selecting management IP address.").AddStringEnumDescription("None", "UseLoopBack").AddDefaultValueDescription("None").String,
 				Optional:            true,
+				Computed:            true,
 				Validators: []validator.String{
-					stringvalidator.OneOf("", "UseLoopBack"),
+					stringvalidator.OneOf("None", "UseLoopBack"),
 				},
+				Default: stringdefault.StaticString("None"),
 			},
 			"protocol_order": schema.StringAttribute{
 				MarkdownDescription: helpers.NewAttributeDescription("A string of comma-separated protocols (ssh/telnet), in the same order in which the connections to each device are attempted. E.g.: 'telnet': only telnet; 'ssh,telnet': ssh first, with telnet fallback.").String,
 				Required:            true,
 			},
 			"retry": schema.Int64Attribute{
-				MarkdownDescription: helpers.NewAttributeDescription("Number of times to try establishing connection to device.").String,
+				MarkdownDescription: helpers.NewAttributeDescription("Number of times to try establishing SSH connection to a device.").String,
 				Optional:            true,
 			},
 			"snmp_auth_passphrase": schema.StringAttribute{
@@ -153,18 +156,18 @@ func (r *DiscoveryResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 			},
 			"snmp_mode": schema.StringAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("Mode of SNMP.").AddStringEnumDescription("AUTHPRIV", "AUTHNOPRIV", "NOAUTHNOPRIV").String,
+				MarkdownDescription: helpers.NewAttributeDescription("").AddStringEnumDescription("AUTHPRIV", "AUTHNOPRIV", "NOAUTHNOPRIV").String,
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("AUTHPRIV", "AUTHNOPRIV", "NOAUTHNOPRIV"),
 				},
 			},
 			"snmp_priv_passphrase": schema.StringAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("Passphrase for SNMP privacy.").String,
+				MarkdownDescription: helpers.NewAttributeDescription("").String,
 				Optional:            true,
 			},
 			"snmp_priv_protocol": schema.StringAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("SNMP privacy protocol.").AddStringEnumDescription("DES", "AES128").String,
+				MarkdownDescription: helpers.NewAttributeDescription("").AddStringEnumDescription("DES", "AES128").String,
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("DES", "AES128"),
@@ -191,18 +194,18 @@ func (r *DiscoveryResource) Schema(ctx context.Context, req resource.SchemaReque
 				Optional:            true,
 			},
 			"snmp_version": schema.StringAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("Version of SNMP").AddStringEnumDescription("v2", "v3").String,
+				MarkdownDescription: helpers.NewAttributeDescription("SNMP version").AddStringEnumDescription("v2", "v3").String,
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("v2", "v3"),
 				},
 			},
 			"timeout": schema.Int64Attribute{
-				MarkdownDescription: helpers.NewAttributeDescription("Time to wait for response in seconds, per each device.").String,
+				MarkdownDescription: helpers.NewAttributeDescription("Number of seconds to wait for each SSH connection to a device.").String,
 				Optional:            true,
 			},
 			"user_name_list": schema.ListAttribute{
-				MarkdownDescription: helpers.NewAttributeDescription("Username of the devices to be discovered.").String,
+				MarkdownDescription: helpers.NewAttributeDescription("").String,
 				ElementType:         types.StringType,
 				Optional:            true,
 			},
