@@ -1,0 +1,55 @@
+---
+name: Image From Url
+rest_endpoint: /dna/intent/api/v1/image/importation/source/url
+get_rest_endpoint: /dna/intent/api/v1/image/importation
+ds_description: Remove me.
+res_description: 'This resource can fetch a software image from a URL and place it on the Catalyst Center.
+  It can be then further used by `catalystcenter_image_distribution`, etc.
+  <p/>
+  This provider currently cannot delete images once created, so beware of creating many unnecessary images.'
+get_from_all: true
+id_from_query_path: response
+id_from_query_path_attribute: imageUuid
+id_query_param: imageUuid
+no_put: true
+no_delete: true
+doc_category: Software Image Management (SWIM)
+attributes:
+  - model_name: applicationType
+    type: String
+    # enum_values: [ONE, TWO]
+    # description:
+    response_data_path: response.0
+    exclude_example: true
+  - model_name: imageFamily
+    tf_name: family
+    type: String
+    # response_model_name: family
+    # description:
+    data_path: 0
+    response_data_path: response.0
+    exclude_example: true
+  - model_name: sourceUrl
+    type: String
+    description: URL from which Catalyst Center should download the software image. Supported file extensions are bin, img, tar, smu, pie, aes, iso, ova, tar_gz, qcow2.
+    mandatory: true
+    id: true
+    response_data_path: response.0
+    data_path: 0
+    write_only: true
+    example: https://example.com/software.bin
+  - model_name: vendor
+    type: String
+    # description:
+    data_path: 0
+    response_data_path: response.0
+    write_only: true
+    exclude_example: true
+  - model_name: thirdParty
+    type: Bool
+    default_value: false
+    # description: Whether the software is from a third party.
+    data_path: 0
+    response_data_path: response.0
+    write_only: true
+    exclude_example: true
