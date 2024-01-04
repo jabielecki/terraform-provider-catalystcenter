@@ -1,7 +1,10 @@
 ---
 name: Discovery
 rest_endpoint: /dna/intent/api/v1/discovery
-get_rest_endpoint: /dna/intent/api/v1/discovery
+get_rest_endpoint: /dna/intent/api/v1/discovery/1/500
+get_from_all: true
+id_from_query_path: response
+put_id_include_path: id
 doc_category: Discovery
 attributes:
   - model_name: cdpLevel
@@ -47,6 +50,7 @@ attributes:
   - model_name: name
     type: String
     mandatory: true
+    id: true
     description: A name for the Discovery.
     example: disco42
   - model_name: netconfPort

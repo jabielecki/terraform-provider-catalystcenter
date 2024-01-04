@@ -117,6 +117,9 @@ func (r *DiscoveryResource) Schema(ctx context.Context, req resource.SchemaReque
 			"name": schema.StringAttribute{
 				MarkdownDescription: helpers.NewAttributeDescription("A name for the Discovery.").String,
 				Required:            true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 			"netconf_port": schema.StringAttribute{
 				MarkdownDescription: helpers.NewAttributeDescription("Port number for netconf as a string. It requires valid SSH credentials to work.").String,
@@ -245,6 +248,13 @@ func (r *DiscoveryResource) Create(ctx context.Context, req resource.CreateReque
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to configure object (POST), got error: %s, %s", err, res.String()))
 		return
 	}
+	params = ""
+	res, err = r.client.Get("/dna/intent/api/v1/discovery/1/500" + params)
+	if err != nil {
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to retrieve object (GET), got error: %s, %s", err, res.String()))
+		return
+	}
+	plan.Id = types.StringValue(res.Get("response.#(name==\"" + plan.Name.ValueString() + "\").id").String())
 
 	tflog.Debug(ctx, fmt.Sprintf("%s: Create finished successfully", plan.Id.ValueString()))
 
@@ -268,8 +278,7 @@ func (r *DiscoveryResource) Read(ctx context.Context, req resource.ReadRequest, 
 	tflog.Debug(ctx, fmt.Sprintf("%s: Beginning Read", state.Id.String()))
 
 	params := ""
-	params += "/" + state.Id.ValueString()
-	res, err := r.client.Get("/dna/intent/api/v1/discovery" + params)
+	res, err := r.client.Get("/dna/intent/api/v1/discovery/1/500" + params)
 	if err != nil && strings.Contains(err.Error(), "StatusCode 404") {
 		resp.State.RemoveResource(ctx)
 		return
@@ -277,6 +286,7 @@ func (r *DiscoveryResource) Read(ctx context.Context, req resource.ReadRequest, 
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to retrieve object (GET), got error: %s, %s", err, res.String()))
 		return
 	}
+	res = res.Get("response.#(id==\"" + state.Id.ValueString() + "\")")
 
 	state.updateFromBody(ctx, res)
 
