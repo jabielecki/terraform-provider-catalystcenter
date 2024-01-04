@@ -125,6 +125,7 @@ attributes:
     type: Int64
     description: Number of seconds to wait for each SSH connection to a device.
     example: 5
+    write_only: true
   - model_name: userNameList
     type: StringList
     # description: Username for the devices to be discovered.

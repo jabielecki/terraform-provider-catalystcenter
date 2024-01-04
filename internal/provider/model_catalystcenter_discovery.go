@@ -307,11 +307,6 @@ func (data *Discovery) fromBody(ctx context.Context, res gjson.Result) {
 	} else {
 		data.SnmpVersion = types.StringNull()
 	}
-	if value := res.Get("timeout"); value.Exists() {
-		data.Timeout = types.Int64Value(value.Int())
-	} else {
-		data.Timeout = types.Int64Null()
-	}
 	if value := res.Get("userNameList"); value.Exists() {
 		data.UserNameList = helpers.GetStringList(value.Array())
 	} else {
@@ -452,11 +447,6 @@ func (data *Discovery) updateFromBody(ctx context.Context, res gjson.Result) {
 		data.SnmpVersion = types.StringValue(value.String())
 	} else {
 		data.SnmpVersion = types.StringNull()
-	}
-	if value := res.Get("timeout"); value.Exists() && !data.Timeout.IsNull() {
-		data.Timeout = types.Int64Value(value.Int())
-	} else {
-		data.Timeout = types.Int64Null()
 	}
 	if value := res.Get("userNameList"); value.Exists() && !data.UserNameList.IsNull() {
 		data.UserNameList = helpers.GetStringList(value.Array())

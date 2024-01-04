@@ -58,7 +58,6 @@ func TestAccCcDiscovery(t *testing.T) {
 	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_discovery.test", "snmp_rw_community_desc", ""))
 	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_discovery.test", "snmp_user_name", ""))
 	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_discovery.test", "snmp_version", ""))
-	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_discovery.test", "timeout", "5"))
 	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_discovery.test", "user_name_list.0", ""))
 
 	var steps []resource.TestStep
