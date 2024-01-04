@@ -1,0 +1,22 @@
+---
+name: Device Families
+rest_endpoint: /dna/intent/api/v1/image/importation/device-family-identifiers
+ds_description: TODO currently it always responds 404 (BAPI not found with technicalName) on sandboxes. Is it really needed? Fetch all Device Families that can be used for tagging an image golden.
+res_description: TODO Delete this resource, it should be only data-source.
+get_no_id: true
+no_delete: true
+doc_category: Software Image Management (SWIM)
+attributes:
+  - model_name: response
+    type: List
+    description: List of objects.
+    exclude_example: true
+    attributes:
+      - model_name: deviceFamily
+        type: String
+        description: Device family readable name, e.g. 'Cisco Catalyst 9000 UADP 8 Port Virtual Switch'.
+        exclude_example: true
+      - model_name: deviceFamilyIdentifier
+        type: String
+        description: Device family identifier, e.g. 999999901.
+        exclude_example: true
