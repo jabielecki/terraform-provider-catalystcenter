@@ -33,6 +33,7 @@ func TestAccDataSourceCcImageFromUrl(t *testing.T) {
 	var checks []resource.TestCheckFunc
 	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_image_from_url.test", "application_type", ""))
 	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_image_from_url.test", "family", ""))
+	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_image_from_url.test", "name", "software.bin"))
 	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_image_from_url.test", "vendor", ""))
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
@@ -57,6 +58,7 @@ func testAccDataSourceCcImageFromUrlConfig() string {
 	config += `	application_type = ""` + "\n"
 	config += `	family = ""` + "\n"
 	config += `	source_url = "https://example.com/software.bin"` + "\n"
+	config += `	name = "software.bin"` + "\n"
 	config += `	vendor = ""` + "\n"
 	config += `	third_party = ` + "\n"
 	config += `}` + "\n"
@@ -64,6 +66,7 @@ func testAccDataSourceCcImageFromUrlConfig() string {
 	config += `
 		data "catalystcenter_image_from_url" "test" {
 			id = catalystcenter_image_from_url.test.id
+			name = "software.bin"
 		}
 	`
 	return config

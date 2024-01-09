@@ -36,6 +36,7 @@ type ImageFromUrl struct {
 	ApplicationType types.String `tfsdk:"application_type"`
 	Family          types.String `tfsdk:"family"`
 	SourceUrl       types.String `tfsdk:"source_url"`
+	Name            types.String `tfsdk:"name"`
 	Vendor          types.String `tfsdk:"vendor"`
 	ThirdParty      types.Bool   `tfsdk:"third_party"`
 }
@@ -44,7 +45,7 @@ type ImageFromUrl struct {
 
 //template:begin getPath
 func (data ImageFromUrl) getPath() string {
-	return "/dna/intent/api/v1/image/importation/source/url"
+	return "/dna/intent/api/v1/image/importation/source/url#"
 }
 
 //template:end getPath

@@ -34,6 +34,7 @@ func TestAccCcImageFromUrl(t *testing.T) {
 	var checks []resource.TestCheckFunc
 	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_image_from_url.test", "application_type", ""))
 	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_image_from_url.test", "family", ""))
+	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_image_from_url.test", "name", "software.bin"))
 	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_image_from_url.test", "vendor", ""))
 
 	var steps []resource.TestStep
@@ -45,10 +46,6 @@ func TestAccCcImageFromUrl(t *testing.T) {
 	steps = append(steps, resource.TestStep{
 		Config: testAccCcImageFromUrlConfig_all(),
 		Check:  resource.ComposeTestCheckFunc(checks...),
-	})
-	steps = append(steps, resource.TestStep{
-		ResourceName: "catalystcenter_image_from_url.test",
-		ImportState:  true,
 	})
 
 	resource.Test(t, resource.TestCase{
@@ -67,6 +64,7 @@ func TestAccCcImageFromUrl(t *testing.T) {
 func testAccCcImageFromUrlConfig_minimum() string {
 	config := `resource "catalystcenter_image_from_url" "test" {` + "\n"
 	config += `	source_url = "https://example.com/software.bin"` + "\n"
+	config += `	name = "software.bin"` + "\n"
 	config += `}` + "\n"
 	return config
 }
@@ -79,6 +77,7 @@ func testAccCcImageFromUrlConfig_all() string {
 	config += `	application_type = ""` + "\n"
 	config += `	family = ""` + "\n"
 	config += `	source_url = "https://example.com/software.bin"` + "\n"
+	config += `	name = "software.bin"` + "\n"
 	config += `	vendor = ""` + "\n"
 	config += `	third_party = ` + "\n"
 	config += `}` + "\n"

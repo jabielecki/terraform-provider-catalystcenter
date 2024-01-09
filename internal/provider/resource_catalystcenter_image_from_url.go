@@ -81,6 +81,10 @@ func (r *ImageFromUrlResource) Schema(ctx context.Context, req resource.SchemaRe
 			"source_url": schema.StringAttribute{
 				MarkdownDescription: helpers.NewAttributeDescription("URL from which Catalyst Center should download the software image. Supported file extensions are bin, img, tar, smu, pie, aes, iso, ova, tar_gz, qcow2.").String,
 				Required:            true,
+			},
+			"name": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("File name that uniquely identifies the software image. It should not contain any path. Usually this can be specified as `basename(source_url)`").String,
+				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -126,18 +130,20 @@ func (r *ImageFromUrlResource) Create(ctx context.Context, req resource.CreateRe
 	body := plan.toBody(ctx, ImageFromUrl{})
 
 	params := ""
+	params += "/" + plan.Name.ValueString()
 	res, err := r.client.Post(plan.getPath()+params, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to configure object (POST), got error: %s, %s", err, res.String()))
 		return
 	}
 	params = ""
+	params += "?name=" + plan.Name.ValueString()
 	res, err = r.client.Get("/dna/intent/api/v1/image/importation" + params)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to retrieve object (GET), got error: %s, %s", err, res.String()))
 		return
 	}
-	plan.Id = types.StringValue(res.Get("response.#(sourceURL==\"" + plan.SourceUrl.ValueString() + "\").imageUuid").String())
+	plan.Id = types.StringValue(res.Get("response.#(name==\"" + plan.Name.ValueString() + "\").imageUuid").String())
 
 	tflog.Debug(ctx, fmt.Sprintf("%s: Create finished successfully", plan.Id.ValueString()))
 
@@ -170,7 +176,6 @@ func (r *ImageFromUrlResource) Read(ctx context.Context, req resource.ReadReques
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to retrieve object (GET), got error: %s, %s", err, res.String()))
 		return
 	}
-	res = res.Get("response.#(id==\"" + state.Id.ValueString() + "\")")
 
 	state.updateFromBody(ctx, res)
 
@@ -203,8 +208,9 @@ func (r *ImageFromUrlResource) Update(ctx context.Context, req resource.UpdateRe
 
 	body := plan.toBody(ctx, state)
 	params := ""
+	params += "/" + plan.Name.ValueString()
 
-	res, err := r.client.Put(plan.getPath()+"/"+plan.Id.ValueString()+params, body)
+	res, err := r.client.Put(plan.getPath()+params, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to configure object (PUT), got error: %s, %s", err, res.String()))
 		return

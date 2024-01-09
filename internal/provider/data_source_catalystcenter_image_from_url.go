@@ -74,6 +74,10 @@ func (d *ImageFromUrlDataSource) Schema(ctx context.Context, req datasource.Sche
 				MarkdownDescription: "URL from which Catalyst Center should download the software image. Supported file extensions are bin, img, tar, smu, pie, aes, iso, ova, tar_gz, qcow2.",
 				Computed:            true,
 			},
+			"name": schema.StringAttribute{
+				MarkdownDescription: "File name that uniquely identifies the software image. It should not contain any path. Usually this can be specified as `basename(source_url)`",
+				Required:            true,
+			},
 			"vendor": schema.StringAttribute{
 				MarkdownDescription: "",
 				Computed:            true,
@@ -116,7 +120,6 @@ func (d *ImageFromUrlDataSource) Read(ctx context.Context, req datasource.ReadRe
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to retrieve object, got error: %s", err))
 		return
 	}
-	res = res.Get("response.#(id==\"" + config.Id.ValueString() + "\")")
 
 	config.fromBody(ctx, res)
 

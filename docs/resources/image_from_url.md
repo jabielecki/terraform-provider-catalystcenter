@@ -15,6 +15,7 @@ This resource can fetch a software image from a URL and place it on the Catalyst
 ```terraform
 resource "catalystcenter_image_from_url" "example" {
   source_url = "https://example.com/software.bin"
+  name       = "software.bin"
 }
 ```
 
@@ -23,6 +24,7 @@ resource "catalystcenter_image_from_url" "example" {
 
 ### Required
 
+- `name` (String) File name that uniquely identifies the software image. It should not contain any path. Usually this can be specified as `basename(source_url)`
 - `source_url` (String) URL from which Catalyst Center should download the software image. Supported file extensions are bin, img, tar, smu, pie, aes, iso, ova, tar_gz, qcow2.
 
 ### Optional
@@ -41,5 +43,5 @@ resource "catalystcenter_image_from_url" "example" {
 Import is supported using the following syntax:
 
 ```shell
-terraform import catalystcenter_image_from_url.example "https://example.com/software.bin"
+terraform import catalystcenter_image_from_url.example "software.bin"
 ```

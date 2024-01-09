@@ -14,7 +14,7 @@ Remove me.
 
 ```terraform
 data "catalystcenter_image_from_url" "example" {
-  id = "https://example.com/software.bin"
+  id = "software.bin"
 }
 ```
 
@@ -24,6 +24,7 @@ data "catalystcenter_image_from_url" "example" {
 ### Required
 
 - `id` (String) The id of the object
+- `name` (String) File name that uniquely identifies the software image. It should not contain any path. Usually this can be specified as `basename(source_url)`
 
 ### Read-Only
 
