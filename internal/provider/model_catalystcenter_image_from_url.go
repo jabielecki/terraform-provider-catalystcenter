@@ -59,7 +59,7 @@ func (data ImageFromUrl) toBody(ctx context.Context, state ImageFromUrl) string 
 		body, _ = sjson.Set(body, "0.imageFamily", data.Family.ValueString())
 	}
 	if !data.SourceUrl.IsNull() {
-		body, _ = sjson.Set(body, "0.sourceUrl", data.SourceUrl.ValueString())
+		body, _ = sjson.Set(body, "0.sourceURL", data.SourceUrl.ValueString())
 	}
 	if !data.Vendor.IsNull() {
 		body, _ = sjson.Set(body, "0.vendor", data.Vendor.ValueString())

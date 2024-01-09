@@ -28,7 +28,8 @@ attributes:
     data_path: 0
     response_data_path: response.0.family
     exclude_example: true
-  - model_name: sourceUrl
+  - model_name: sourceURL
+    tf_name: source_url
     type: String
     description: URL from which Catalyst Center should download the software image. Supported file extensions are bin, img, tar, smu, pie, aes, iso, ova, tar_gz, qcow2.
     mandatory: true
