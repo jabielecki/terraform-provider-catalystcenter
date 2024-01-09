@@ -33,6 +33,7 @@ func TestAccDataSourceCcImageFromUrl(t *testing.T) {
 	var checks []resource.TestCheckFunc
 	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_image_from_url.test", "application_type", ""))
 	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_image_from_url.test", "family", ""))
+	checks = append(checks, resource.TestCheckResourceAttr("data.catalystcenter_image_from_url.test", "vendor", ""))
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,

@@ -74,15 +74,20 @@ func (data ImageFromUrl) toBody(ctx context.Context, state ImageFromUrl) string 
 
 //template:begin fromBody
 func (data *ImageFromUrl) fromBody(ctx context.Context, res gjson.Result) {
-	if value := res.Get("response.0"); value.Exists() {
+	if value := res.Get("response.0.applicationType"); value.Exists() {
 		data.ApplicationType = types.StringValue(value.String())
 	} else {
 		data.ApplicationType = types.StringNull()
 	}
-	if value := res.Get("response.0"); value.Exists() {
+	if value := res.Get("response.0.family"); value.Exists() {
 		data.Family = types.StringValue(value.String())
 	} else {
 		data.Family = types.StringNull()
+	}
+	if value := res.Get("response.0.vendor"); value.Exists() {
+		data.Vendor = types.StringValue(value.String())
+	} else {
+		data.Vendor = types.StringNull()
 	}
 }
 
@@ -90,15 +95,20 @@ func (data *ImageFromUrl) fromBody(ctx context.Context, res gjson.Result) {
 
 //template:begin updateFromBody
 func (data *ImageFromUrl) updateFromBody(ctx context.Context, res gjson.Result) {
-	if value := res.Get("response.0"); value.Exists() && !data.ApplicationType.IsNull() {
+	if value := res.Get("response.0.applicationType"); value.Exists() && !data.ApplicationType.IsNull() {
 		data.ApplicationType = types.StringValue(value.String())
 	} else {
 		data.ApplicationType = types.StringNull()
 	}
-	if value := res.Get("response.0"); value.Exists() && !data.Family.IsNull() {
+	if value := res.Get("response.0.family"); value.Exists() && !data.Family.IsNull() {
 		data.Family = types.StringValue(value.String())
 	} else {
 		data.Family = types.StringNull()
+	}
+	if value := res.Get("response.0.vendor"); value.Exists() && !data.Vendor.IsNull() {
+		data.Vendor = types.StringValue(value.String())
+	} else {
+		data.Vendor = types.StringNull()
 	}
 }
 

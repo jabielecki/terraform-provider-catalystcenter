@@ -34,6 +34,7 @@ func TestAccCcImageFromUrl(t *testing.T) {
 	var checks []resource.TestCheckFunc
 	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_image_from_url.test", "application_type", ""))
 	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_image_from_url.test", "family", ""))
+	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_image_from_url.test", "vendor", ""))
 
 	var steps []resource.TestStep
 	if os.Getenv("SKIP_MINIMUM_TEST") == "" {
