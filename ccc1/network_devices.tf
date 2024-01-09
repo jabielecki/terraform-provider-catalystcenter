@@ -17,12 +17,3 @@ locals {
 output "catalystcenter_network_devices" {
   value = local.devices
 }
-
-resource "random_pet" "this" {
-  for_each = {
-    for k, v in local.devices : k => v
-    if v.role == "CORE"
-  }
-
-  prefix = join("--", [each.value.hostname, each.value.platform_id])
-}
