@@ -1,21 +1,32 @@
 locals {
-  url = "http://ftpmirror.uk/pub/Software/Cisco/3850/cat3k_caa-universalk9.16.12.07.SPA.bin"
-}
-resource "catalystcenter_image_from_url" "example" {
-  source_url = local.url
-  name       = basename(local.url)
+  source_paths = sort(tolist(fileset(path.module, "*.bin")))
+  source_path  = try(local.source_paths[0], "")
 }
 
-output "catalystcenter_image_from_url" {
-  value = catalystcenter_image_from_url.example
-}
+resource "catalystcenter_image_from_file" "example" {
 
-resource "catalystcenter_image_distribution" "example" {
-  for_each = {
-    for k, v in local.devices : k => v
-    if v.role == "CORE"
+  source_path = local.source_path
+  name        = basename(local.source_path)
+
+  lifecycle {
+    precondition {
+      condition     = length(fileset(path.module, "*.bin")) > 0
+      error_message = "Software image file not found! Please put it here: ${abspath(path.module)}/*.bin"
+    }
   }
 
-  device_uuid = each.key
-  image_uuid  = catalystcenter_image_from_url.example.id
 }
+
+output "catalystcenter_image_from_file" {
+  value = catalystcenter_image_from_file.example
+}
+
+# resource "catalystcenter_image_distribution" "example" {
+#   for_each = {
+#     for k, v in local.devices : k => v
+#     if v.role == "CORE"
+#   }
+
+#   device_uuid = each.key
+#   image_uuid  = catalystcenter_image_from_file.example.id
+# }

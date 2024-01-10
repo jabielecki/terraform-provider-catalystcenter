@@ -1,0 +1,60 @@
+---
+name: Image From File
+#rest_endpoint: /dna/intent/api/v1/image/importation/source/file#
+rest_endpoint: /dna/intent/api/v1/image/importation/source/file
+get_rest_endpoint: /dna/intent/api/v1/image/importation
+ds_description: Remove me.
+res_description: 'This resource can fetch a software image from a local file and upload it on the Catalyst Center.
+  It can be then further used by `catalystcenter_image_distribution`, etc.
+  <p/>
+  This provider currently cannot delete images once created, so beware of creating many unnecessary images.'
+# get_from_all: true # when true the rest_endpoint doesn't have to end in hash
+id_from_query_path: response
+id_from_query_path_attribute: imageUuid
+id_query_param: imageUuid
+# no_put: true
+no_import: true
+no_delete: true
+doc_category: Software Image Management (SWIM)
+attributes:
+  - model_name: thirdPartyApplicationType
+    type: String
+    # enum_values: [ONE, TWO]
+    description: Third party application type
+    response_data_path: response.0.applicationType
+    exclude_example: true
+  - model_name: thirdPartyImageFamily
+    tf_name: family
+    type: String
+    description: Third party image family
+    data_path: 0
+    response_data_path: response.0.family
+    exclude_example: true
+  - model_name: sourcePath
+    type: String
+    description: Local path where the software image file resides. Supported file extensions are bin, img, tar, smu, pie, aes, iso, ova, tar_gz, qcow2.
+    mandatory: true
+    write_only: true
+    example: ../software.bin
+  - model_name: name
+    type: String
+    description: "File name that uniquely identifies the software image. It should not contain any path. Usually this can be specified as `basename(source_path)`"
+    mandatory: true
+    id: true
+    query_param: true
+    response_data_path: response.0.name
+    data_path: 0
+    example: basename(\"../software.bin\")
+  - model_name: thirdPartyVendor
+    type: String
+    description: Third party Vendor
+    data_path: 0
+    response_data_path: response.0.vendor
+    exclude_example: true
+  - model_name: isThirdParty
+    type: Bool
+    default_value: false
+    description: Whether the software image is from a third party.
+    data_path: 0
+    write_only: true
+    exclude_example: true
