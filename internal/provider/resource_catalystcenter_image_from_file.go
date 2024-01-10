@@ -23,6 +23,9 @@ package provider
 import (
 	"context"
 	"fmt"
+	"io"
+	"mime/multipart"
+	"os"
 	"strings"
 
 	"github.com/CiscoDevNet/terraform-provider-catalystcenter/internal/provider/helpers"
@@ -111,7 +114,6 @@ func (r *ImageFromFileResource) Configure(_ context.Context, req resource.Config
 
 //template:end model
 
-//template:begin create
 func (r *ImageFromFileResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var plan ImageFromFile
 
@@ -124,12 +126,31 @@ func (r *ImageFromFileResource) Create(ctx context.Context, req resource.CreateR
 
 	tflog.Debug(ctx, fmt.Sprintf("%s: Beginning Create", plan.Id.ValueString()))
 
-	// Create object
-	body := plan.toBody(ctx, ImageFromFile{})
-
 	params := ""
-	params += "/" + plan.Name.ValueString()
-	res, err := r.client.Post(plan.getPath()+params, body, func(r *cc.Req) { r.MaxAsyncWaitTime = 600 })
+	params += "?isThirdParty=" + plan.IsThirdParty.String()
+	params += "&thirdPartyImageFamily=" + plan.Family.ValueString()
+	params += "&thirdPartyApplicationType=" + plan.ThirdPartyApplicationType.ValueString()
+	params += "&thirdPartyVendor=" + plan.ThirdPartyVendor.ValueString()
+
+	// the body of POST will be a stream (io.Reader), as body might be larger than available memory
+	body, contentType, err := pipeMultiPartUpload(ctx, plan.SourcePath.ValueString(), plan.Name.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to upload local file: %v", err))
+		return
+	}
+
+	request := r.client.NewReq("POST", plan.getPath()+params, body)
+
+	// Set the content type header to multipart/form-data
+	request.HttpReq.Header.Set("Content-Type", contentType)
+
+	err = r.client.Authenticate()
+	if err != nil {
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to configure object (POST), got error: %s", err))
+		return
+	}
+
+	res, err := r.client.Do(request)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to configure object (POST), got error: %s, %s", err, res.String()))
 		return
@@ -149,7 +170,59 @@ func (r *ImageFromFileResource) Create(ctx context.Context, req resource.CreateR
 	resp.Diagnostics.Append(diags...)
 }
 
-//template:end create
+// pipeMultiPartUpload returns a pipe, a Content-Type header value, and an error.
+// The result pipe would provide re-formatted contests of file under the given sourcePath.
+// The contents are formatted as a body of MIME multipart/form-data HTTP POST request (so, a file upload).
+// The basename is how the file would be identied internally within the upload.
+func pipeMultiPartUpload(ctx context.Context, sourcePath, basename string) (io.Reader, string, error) {
+	const dummyContentType = "application/octet-stream"
+
+	source, err := os.Open(sourcePath)
+	if err != nil {
+		return nil, dummyContentType, err
+	}
+
+	tflog.Info(ctx, "swim file opened", map[string]interface{}{"sourcePath": sourcePath})
+
+	readPipe, writePipe := io.Pipe()
+
+	mw := multipart.NewWriter(writePipe)
+
+	// data is copied in parallel, as soon as remote accepts it
+	go func() {
+		defer source.Close()
+
+		// Create a form file writer for the file field
+		partWriter, err := mw.CreateFormFile("file", basename)
+		if err != nil {
+			panic(err)
+		}
+
+		tflog.Info(ctx, "swim mw created")
+
+		// Copy the file data to the form file writer
+		var count int64
+		if count, err = io.Copy(partWriter, source); err != nil {
+			panic(err)
+		}
+
+		tflog.Info(ctx, "swim copied through pipe", map[string]interface{}{"countBytes": count})
+
+		// Close the multipart writer to get the terminating boundary
+
+		if err := mw.Close(); err != nil {
+			return
+		}
+
+		if err := writePipe.Close(); err != nil {
+			return
+		}
+
+		tflog.Info(ctx, "swim: pipe closed for writing")
+	}()
+
+	return readPipe, mw.FormDataContentType(), nil
+}
 
 //template:begin read
 func (r *ImageFromFileResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
