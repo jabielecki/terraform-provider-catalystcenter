@@ -25,3 +25,13 @@ terraform apply -auto-approve && terraform destroy -auto-approve
 ```
 
 Please send the file `log.txt` back.
+
+## How Was The Binary Generated
+
+The default CGo compilation is disabled, which results in a binary more compatible with comparatively more Linux distros, old and new.
+The binary location is critical so that Terraform would pick it up from disk (otherwise Terraform would attempt to download
+from the official Registry, and fail).
+
+```sh
+go generate . && CGO_ENABLED=0 go build -o ccc1/terraform.d/plugins/codilime.com/CiscoDevNet/catalystcenter/0.1.1/linux_amd64/terraform-provider-catalystcenter .
+```
