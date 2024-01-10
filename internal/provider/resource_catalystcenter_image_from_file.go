@@ -126,7 +126,22 @@ func (r *ImageFromFileResource) Create(ctx context.Context, req resource.CreateR
 
 	tflog.Debug(ctx, fmt.Sprintf("%s: Beginning Create", plan.Id.ValueString()))
 
-	params := ""
+	params := "?name=" + plan.Name.ValueString()
+
+	res, err := r.client.Get("/dna/intent/api/v1/image/importation" + params)
+	if !strings.Contains(err.Error(), "HTTP Request failed: StatusCode 404") {
+		resp.Diagnostics.AddError("Image already exists",
+			fmt.Sprintf("Querying image with name %q should return 404 Not Found, but instead got: %s (error %s)",
+				plan.Name.ValueString(),
+				res.String(),
+				err,
+			))
+		return
+	}
+
+	tflog.Info(ctx, "Query returned StatusCode 404 as expected, proceeding to uploading the image now.")
+
+	params = ""
 	params += "?isThirdParty=" + plan.IsThirdParty.String()
 	params += "&thirdPartyImageFamily=" + plan.Family.ValueString()
 	params += "&thirdPartyApplicationType=" + plan.ThirdPartyApplicationType.ValueString()
@@ -139,7 +154,7 @@ func (r *ImageFromFileResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	request := r.client.NewReq("POST", plan.getPath()+params, body)
+	request := r.client.NewReq("POST", plan.getPath()+params, body, func(r *cc.Req) { r.MaxAsyncWaitTime = 600 })
 
 	// Set the content type header to multipart/form-data
 	request.HttpReq.Header.Set("Content-Type", contentType)
@@ -150,7 +165,7 @@ func (r *ImageFromFileResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	res, err := r.client.Do(request)
+	res, err = r.client.Do(request)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to configure object (POST), got error: %s, %s", err, res.String()))
 		return
