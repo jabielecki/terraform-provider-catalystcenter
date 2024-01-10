@@ -115,7 +115,7 @@ func (r *DeviceFamiliesResource) Create(ctx context.Context, req resource.Create
 	body := plan.toBody(ctx, DeviceFamilies{})
 
 	params := ""
-	res, err := r.client.Post(plan.getPath()+params, body)
+	res, err := r.client.Post(plan.getPath()+params, body, func(r *cc.Req) { r.MaxAsyncWaitTime = 600 })
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to configure object (POST), got error: %s, %s", err, res.String()))
 		return
@@ -183,7 +183,6 @@ func (r *DeviceFamiliesResource) Update(ctx context.Context, req resource.Update
 
 	body := plan.toBody(ctx, state)
 	params := ""
-
 	res, err := r.client.Put(plan.getPath()+"/"+plan.Id.ValueString()+params, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to configure object (PUT), got error: %s, %s", err, res.String()))
