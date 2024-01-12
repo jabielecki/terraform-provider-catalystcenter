@@ -159,6 +159,9 @@ func (r *ImageFromFileResource) Create(ctx context.Context, req resource.CreateR
 	// Set the content type header to multipart/form-data
 	request.HttpReq.Header.Set("Content-Type", contentType)
 
+	// No logging, the tflog can only log from memory, but the body might be larger than available memory.
+	request.LogPayload = false
+
 	err = r.client.Authenticate()
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to configure object (POST), got error: %s", err))
@@ -170,6 +173,7 @@ func (r *ImageFromFileResource) Create(ctx context.Context, req resource.CreateR
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to configure object (POST), got error: %s, %s", err, res.String()))
 		return
 	}
+
 	params = ""
 	params += "?name=" + plan.Name.ValueString()
 	res, err = r.client.Get("/dna/intent/api/v1/image/importation" + params)
