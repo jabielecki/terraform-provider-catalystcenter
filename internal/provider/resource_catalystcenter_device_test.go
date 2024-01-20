@@ -58,6 +58,7 @@ func TestAccCcDevice(t *testing.T) {
 	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_device.test", "snmp_version", "v3"))
 	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_device.test", "type", "NETWORK_DEVICE"))
 	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_device.test", "user_name", "admin"))
+	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_device.test", "software_image_uuid", "beef-beef-beef-beefbeef1234"))
 
 	var steps []resource.TestStep
 	if os.Getenv("SKIP_MINIMUM_TEST") == "" {
@@ -141,6 +142,7 @@ func testAccCcDeviceConfig_all() string {
 	config += `	snmp_version = "v3"` + "\n"
 	config += `	type = "NETWORK_DEVICE"` + "\n"
 	config += `	user_name = "admin"` + "\n"
+	config += `	software_image_uuid = "beef-beef-beef-beefbeef1234"` + "\n"
 	config += `}` + "\n"
 	return config
 }

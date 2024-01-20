@@ -61,6 +61,7 @@ type Device struct {
 	Type                  types.String                  `tfsdk:"type"`
 	UpdateMgmtIpAddresses []DeviceUpdateMgmtIpAddresses `tfsdk:"update_mgmt_ip_addresses"`
 	UserName              types.String                  `tfsdk:"user_name"`
+	SoftwareImageUuid     types.String                  `tfsdk:"software_image_uuid"`
 }
 
 type DeviceUpdateMgmtIpAddresses struct {
@@ -328,6 +329,11 @@ func (data *Device) fromBody(ctx context.Context, res gjson.Result) {
 	} else {
 		data.UserName = types.StringNull()
 	}
+	if value := res.Get("softwareImageUUID"); value.Exists() {
+		data.SoftwareImageUuid = types.StringValue(value.String())
+	} else {
+		data.SoftwareImageUuid = types.StringNull()
+	}
 }
 
 //template:end fromBody
@@ -498,6 +504,11 @@ func (data *Device) updateFromBody(ctx context.Context, res gjson.Result) {
 	} else {
 		data.UserName = types.StringNull()
 	}
+	if value := res.Get("softwareImageUUID"); value.Exists() && !data.SoftwareImageUuid.IsNull() {
+		data.SoftwareImageUuid = types.StringValue(value.String())
+	} else {
+		data.SoftwareImageUuid = types.StringNull()
+	}
 }
 
 //template:end updateFromBody
@@ -583,6 +594,9 @@ func (data *Device) isNull(ctx context.Context, res gjson.Result) bool {
 		return false
 	}
 	if !data.UserName.IsNull() {
+		return false
+	}
+	if !data.SoftwareImageUuid.IsNull() {
 		return false
 	}
 	return true

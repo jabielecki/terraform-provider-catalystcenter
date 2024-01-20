@@ -168,6 +168,7 @@ func (data {{camelCase .Name}}) toBody(ctx context.Context, state {{camelCase .N
 	}
 	{{- end}}
 	{{- range .Attributes}}
+	{{- if not .DontAddToRequestBody}}
 	{{- if .Value}}
 	{{- if .ValueCondition}}
 	if {{.ValueCondition}} {
@@ -298,6 +299,7 @@ func (data {{camelCase .Name}}) toBody(ctx context.Context, state {{camelCase .N
 			body, _ = sjson.SetRaw(body, "{{if .DataPath}}{{.DataPath}}.{{end}}{{if .ModelName}}{{.ModelName}}.{{end}}-1", itemBody)
 		}
 	}
+	{{- end}}
 	{{- end}}
 	{{- end}}
 	{{- end}}

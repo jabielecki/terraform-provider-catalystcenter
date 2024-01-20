@@ -40,6 +40,7 @@ resource "catalystcenter_device" "example" {
   snmp_version            = "v3"
   type                    = "NETWORK_DEVICE"
   user_name               = "admin"
+  software_image_uuid     = "beef-beef-beef-beefbeef1234"
 }
 ```
 
@@ -86,6 +87,7 @@ resource "catalystcenter_device" "example" {
 - `meraki_org_ids` (List of String) Selected Meraki organizations for which the devices needs to be imported
 - `netconf_port` (String) NETCONF port of the device
 - `serial_number` (String) Serial number of the device
+- `software_image_uuid` (String) The image which should be active on requested device
 - `update_mgmt_ip_addresses` (Attributes List) IP address of the device to be mapped to New IP address (see [below for nested schema](#nestedatt--update_mgmt_ip_addresses))
 
 ### Read-Only

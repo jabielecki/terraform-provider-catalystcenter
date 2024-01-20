@@ -160,4 +160,9 @@ attributes:
     mandatory: true
     description: CLI username of the device
     example: admin
-  
+  - model_name: softwareImageUUID
+    tf_name: software_image_uuid
+    type: String
+    description: The image which should be active on requested device
+    example: beef-beef-beef-beefbeef1234
+    dont_add_to_request_body: true

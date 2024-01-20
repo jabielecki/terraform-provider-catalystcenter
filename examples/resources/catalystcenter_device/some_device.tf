@@ -1,4 +1,4 @@
-resource "catalystcenter_device" "example" {
+resource "catalystcenter_device" "another" {
   cli_transport           = "ssh"
   compute_device          = false
   enable_password         = "cisco123"
@@ -6,8 +6,8 @@ resource "catalystcenter_device" "example" {
   http_password           = "cisco123"
   http_port               = "80"
   http_secure             = true
-  http_user_name          = "admin"
-  ip_address              = "1.2.3.4"
+  http_user_name          = "admina"
+  ip_address              = "204.101.16.1"
   meraki_org_ids          = ["12345678901234567890"]
   netconf_port            = "830"
   password                = "cisco123"
@@ -25,5 +25,4 @@ resource "catalystcenter_device" "example" {
   snmp_version            = "v3"
   type                    = "NETWORK_DEVICE"
   user_name               = "admin"
-  software_image_uuid     = "beef-beef-beef-beefbeef1234"
 }

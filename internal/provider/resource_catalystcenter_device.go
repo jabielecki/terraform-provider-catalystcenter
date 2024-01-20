@@ -36,6 +36,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	cc "github.com/netascode/go-catalystcenter"
+	"github.com/tidwall/gjson"
 )
 
 //template:end imports
@@ -222,6 +223,10 @@ func (r *DeviceResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				MarkdownDescription: helpers.NewAttributeDescription("CLI username of the device").String,
 				Required:            true,
 			},
+			"software_image_uuid": schema.StringAttribute{
+				MarkdownDescription: helpers.NewAttributeDescription("The image which should be active on requested device").String,
+				Optional:            true,
+			},
 		},
 	}
 }
@@ -236,7 +241,6 @@ func (r *DeviceResource) Configure(_ context.Context, req resource.ConfigureRequ
 
 //template:end model
 
-//template:begin create
 func (r *DeviceResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var plan Device
 
@@ -247,13 +251,87 @@ func (r *DeviceResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
+	res, err := r.client.Get(
+		fmt.Sprintf("/dna/intent/api/v1/network-device?managementIpAddress=%s",
+			plan.IpAddress.ValueString()),
+	)
+	if err != nil {
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf(
+			"Failed to retrieve list of network devices for IP Address: '%s' (GET), got error: %v, res: %s",
+			plan.IpAddress.ValueString(), err, res.String()))
+		return
+	}
+
+	if len(res.Get("response").Array()) == 0 {
+		resp.Diagnostics.AddError(
+			"Client Error",
+			fmt.Sprintf(
+				"Failed to retrieve network device with Management IP Address: %s. "+
+					"Device not found",
+				plan.IpAddress,
+			),
+		)
+		return
+	}
+	if len(res.Get("response").Array()) > 1 {
+		resp.Diagnostics.AddError(
+			"Client Error",
+			fmt.Sprintf(
+				"Unexpected number of network devices with Management IP Address: %d. "+
+					"Expected 1.",
+				len(res.Get("response").Array()),
+			),
+		)
+		return
+	}
+	deviceUUID := res.Get("response").Array()[0].Get("id").String()
+	if deviceUUID == "" {
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf(
+			"Failed to retrieve the device UUID from response: %s. "+
+				"Expected field .response[0].id to be not empty string",
+			res.String()))
+		return
+	}
+
+	res, err = r.client.Get(
+		fmt.Sprintf("/dna/intent/api/v1/network-device/%s/stack", deviceUUID),
+	)
+	if err != nil {
+		resp.Diagnostics.AddError("Client Error",
+			fmt.Sprintf(
+				"Failed to retrieve stack information for devideUUID '%s' (GET), got error: %s, %s",
+				deviceUUID, err, res.String()))
+		return
+	}
+
+	if res.Get("response.stackSwitchInfo").Type == gjson.Null {
+		resp.Diagnostics.AddError("Client Error",
+			fmt.Sprintf(
+				"The stack information for devideUUID '%s' (GET) is null. Cannot find out the current software image",
+				deviceUUID))
+		return
+	}
+	if len(res.Get("response.stackSwitchInfo").Array()) == 0 {
+		resp.Diagnostics.AddError("Client Error",
+			fmt.Sprintf(
+				"The stack information for devideUUID '%s' (GET) is empty. Cannot find out the current software image",
+				deviceUUID))
+		return
+	}
+
+	softwareImage := res.Get("response.stackSwitchInfo").Array()[0].Get("softwareImage").String()
+	resp.Diagnostics.AddWarning("Client info", fmt.Sprintf("Software image: %s", softwareImage))
+	return
+
+	plan.Id = types.StringValue(res.Get("response.#(managementIpAddress==\"" + plan.IpAddress.ValueString() + "\").id").String())
+
 	tflog.Debug(ctx, fmt.Sprintf("%s: Beginning Create", plan.Id.ValueString()))
 
 	// Create object
 	body := plan.toBody(ctx, Device{})
 
 	params := ""
-	res, err := r.client.Post(plan.getPath()+params, body)
+	res, err = r.client.Post(plan.getPath()+params, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to configure object (POST), got error: %s, %s", err, res.String()))
 		return
@@ -271,8 +349,6 @@ func (r *DeviceResource) Create(ctx context.Context, req resource.CreateRequest,
 	diags = resp.State.Set(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 }
-
-//template:end create
 
 //template:begin read
 func (r *DeviceResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
