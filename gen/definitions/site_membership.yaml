@@ -1,0 +1,26 @@
+---
+name: Site membership
+rest_endpoint: /api/v1/group/deploy-after-preview/member
+res_description: 'Assign device to a site.
+  <p/>
+  Experimental: this resource uses undocumented API, do not rely on it, it might disappear
+  from the future versions of the provider.'
+no_data_source: true
+no_update: true
+no_import: true
+no_read: true
+no_delete: true
+doc_category: Sites
+attributes:
+  - model_name: siteId
+    type: String
+    description: Site UUID
+    mandatory: true
+    requires_replace: true
+    example: 9e5e4f70-3ed9-4487-8889-791f5f0295b4
+  - model_name: deviceId
+    type: String
+    description: Device UUID
+    mandatory: true
+    requires_replace: true
+    example: 54e5ed10-1555-46bb-9c22-5e4fc5aa3ad2
