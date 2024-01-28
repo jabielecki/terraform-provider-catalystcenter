@@ -23,6 +23,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/CiscoDevNet/terraform-provider-catalystcenter/internal/provider/helpers"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -137,7 +138,6 @@ func (r *SiteMembershipResource) Create(ctx context.Context, req resource.Create
 	resp.Diagnostics.Append(diags...)
 }
 
-//template:begin read
 func (r *SiteMembershipResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var state SiteMembership
 
@@ -150,13 +150,43 @@ func (r *SiteMembershipResource) Read(ctx context.Context, req resource.ReadRequ
 
 	tflog.Debug(ctx, fmt.Sprintf("%s: Beginning Read", state.Id.String()))
 
+	var siteId, deviceId string
+	split := strings.Split(state.Id.ValueString(), "/")
+	if len(split) == 2 {
+		siteId = split[0]
+		deviceId = split[1]
+	}
+	if siteId == "" || deviceId == "" || len(split) != 2 {
+		resp.Diagnostics.AddError("Provider Error", "expected id to have 2 components separated by slash '/', for example '9e5e4f70-3ed9-4487-8889-791f5f0295b4/54e5ed10-1555-46bb-9c22-5e4fc5aa3ad2'")
+		return
+	}
+
+	res, err := r.client.Get("/dna/intent/api/v1/site-member" + "/" + siteId + "/member?memberType=networkdevice")
+	if err != nil && strings.Contains(err.Error(), "StatusCode 404") {
+		resp.State.RemoveResource(ctx)
+		return
+	} else if err != nil {
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to retrieve object (GET), got error: %s, %s", err, res.String()))
+		return
+	}
+
+	if !res.Get(fmt.Sprintf("response.#(instanceUuid==%q).instanceUuid", deviceId)).Exists() {
+		// TODO: paginate from offset 500
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	// If every attribute is set to null we are dealing with an import operation and therefore reading all attributes
+	if state.isNull(ctx, res) {
+		state.SiteId = types.StringValue(siteId)
+		state.DeviceId = types.StringValue(deviceId)
+	}
+
 	tflog.Debug(ctx, fmt.Sprintf("%s: Read finished successfully", state.Id.ValueString()))
 
 	diags = resp.State.Set(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 }
-
-//template:end read
 
 //template:begin update
 func (r *SiteMembershipResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {

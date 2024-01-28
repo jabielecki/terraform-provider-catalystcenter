@@ -8,8 +8,7 @@ res_description: 'Assign device to a site.
 no_data_source: true
 no_update: true
 no_import: true
-no_read: true
-no_delete: true
+get_rest_endpoint: /dna/intent/api/v1/site-member # {siteId}/member
 doc_category: Sites
 attributes:
   - model_name: siteId
