@@ -16,12 +16,33 @@ test_tags:
   # Test requires a local file with software image - but the content is licensed and quite large, so not suitable for this repository.
   - TEST_IMAGE_FROM_FILE
 doc_category: Software Image Management (SWIM)
+test_prerequisites: |
+  terraform {
+    required_providers {
+      archive = {
+        source = "hashicorp/archive"
+        version = "2.4.2"
+      }
+    }
+  }
+  provider "archive" {
+    # Configuration options
+  }
+  data "archive_file" "minimal_zip" {
+    type        = "zip"
+    output_path = "dummy.zip"
+    source {
+      content  = "dummy"
+      filename = "dummy.txt"
+    }
+  }
 attributes:
   - model_name: thirdPartyApplicationType
     type: String
     description: Third party application type
     response_data_path: response.0.applicationType
     requires_replace: true
+    test_value: '"Testing Terraform provider"'
     exclude_example: true
   - model_name: thirdPartyImageFamily
     tf_name: family
@@ -30,6 +51,7 @@ attributes:
     data_path: '0'
     response_data_path: response.0.family
     requires_replace: true
+    test_value: '"Testing Terraform provider"'
     exclude_example: true
   - model_name: sourcePath
     type: String
@@ -37,6 +59,7 @@ attributes:
     mandatory: true
     write_only: true
     requires_replace: true
+    test_value: data.archive_file.minimal_zip.output_path
     example: ../software.bin
   - model_name: name
     type: String
@@ -47,6 +70,7 @@ attributes:
     response_data_path: response.0.name
     data_path: '0'
     requires_replace: true
+    test_value: basename(data.archive_file.minimal_zip.output_path)
     example: basename(\"../software.bin\")
   - model_name: thirdPartyVendor
     type: String
@@ -54,6 +78,7 @@ attributes:
     data_path: '0'
     response_data_path: response.0.vendor
     requires_replace: true
+    test_value: '"Terraform"'
     exclude_example: true
   - model_name: isThirdParty
     type: Bool
@@ -62,4 +87,5 @@ attributes:
     data_path: '0'
     write_only: true
     requires_replace: true
+    test_value: true
     exclude_example: true

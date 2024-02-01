@@ -29,45 +29,61 @@ import (
 
 //template:end imports
 
-//template:begin testAcc
 func TestAccCcImage(t *testing.T) {
 	if os.Getenv("TEST_IMAGE_FROM_FILE") == "" {
 		t.Skip("skipping test, set environment variable TEST_IMAGE_FROM_FILE")
 	}
 	var checks []resource.TestCheckFunc
-	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_image.test", "third_party_application_type", ""))
-	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_image.test", "family", ""))
-	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_image.test", "name", "basename(\"../software.bin\")"))
-	checks = append(checks, resource.TestCheckResourceAttr("catalystcenter_image.test", "third_party_vendor", ""))
 
 	var steps []resource.TestStep
 	if os.Getenv("SKIP_MINIMUM_TEST") == "" {
 		steps = append(steps, resource.TestStep{
-			Config: testAccCcImageConfig_minimum(),
+			Config: testAccCcImagePrerequisitesConfig + testAccCcImageConfig_minimum(),
 		})
 	}
 	steps = append(steps, resource.TestStep{
-		Config: testAccCcImageConfig_all(),
+		Config: testAccCcImagePrerequisitesConfig + testAccCcImageConfig_all(),
 		Check:  resource.ComposeTestCheckFunc(checks...),
 	})
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		ExternalProviders: 	map[string]resource.ExternalProvider{
+			"archive": {
+				VersionConstraint: "2.4.2",
+				Source:            "registry.terraform.io/hashicorp/archive",
+			},
+		},
 		Steps:                    steps,
 	})
 }
 
-//template:end testAcc
-
 //template:begin testPrerequisites
+const testAccCcImagePrerequisitesConfig = `
+resource "archive_file" "minimal_zip" {
+  type        = "zip"
+  output_path = "/tmp/TF.1.2.4-comp_matrix.zip"
+  source {
+    content  = "dummy"
+    filename = "dummy.txt"
+  }
+
+  # How to make this work on a builtin provider instead of going with ExternalProviders:
+  #provisioner "local-exec" {
+  #  command = "echo a > /tmp/a && tar -C /tmp -cf /tmp/dummy.tar a"
+  #}
+}
+
+`
+
 //template:end testPrerequisites
 
 //template:begin testAccConfigMinimal
 func testAccCcImageConfig_minimum() string {
 	config := `resource "catalystcenter_image" "test" {` + "\n"
-	config += `	source_path = "../software.bin"` + "\n"
-	config += `	name = "basename(\"../software.bin\")"` + "\n"
+	config += `	source_path = "/tmp/TF.1.2.4-comp_matrix.zip` + "\n"
+	config += `	name = basename("/tmp/TF.1.2.4-comp_matrix.zip)` + "\n"
 	config += `}` + "\n"
 	return config
 }
@@ -77,12 +93,12 @@ func testAccCcImageConfig_minimum() string {
 //template:begin testAccConfigAll
 func testAccCcImageConfig_all() string {
 	config := `resource "catalystcenter_image" "test" {` + "\n"
-	config += `	third_party_application_type = ""` + "\n"
-	config += `	family = ""` + "\n"
-	config += `	source_path = "../software.bin"` + "\n"
-	config += `	name = "basename(\"../software.bin\")"` + "\n"
-	config += `	third_party_vendor = ""` + "\n"
-	config += `	is_third_party = ` + "\n"
+	config += `	third_party_application_type = "UNKNOWN"` + "\n"
+	config += `	family = "TF"` + "\n"
+	config += `	source_path = "/tmp/TF.1.2.4-comp_matrix.zip"` + "\n"
+	config += `	name = basename("/tmp/TF.1.2.4-comp_matrix.zip")` + "\n"
+	config += `	third_party_vendor = "CISCO"` + "\n"
+	config += `	is_third_party = true` + "\n"
 	config += `}` + "\n"
 	return config
 }
