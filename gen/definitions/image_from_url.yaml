@@ -3,7 +3,8 @@ name: Image From Url
 rest_endpoint: /dna/intent/api/v1/image/importation/source/url#
 get_rest_endpoint: /dna/intent/api/v1/image/importation
 ds_description: Remove me.
-res_description: 'This resource can fetch a software image from a URL and place it on the Catalyst Center.
+res_description:
+  'This resource can fetch a software image from a URL and place it on the Catalyst Center.
   It can be then further used by `catalystcenter_image_distribution`, etc.
   <p/>
   This provider currently cannot delete images once created, so beware of creating many unnecessary images.'
@@ -36,10 +37,10 @@ attributes:
     mandatory: true
     data_path: 0
     write_only: true
-    example: https://example.com/software.bin
+    example: https://example.com/software.bin # TODO: http://172.21.236.183/swim/
   - model_name: name
     type: String
-    description: "File name that uniquely identifies the software image. It should not contain any path. Usually this can be specified as `basename(source_url)`"
+    description: 'File name that uniquely identifies the software image. It should not contain any path. Usually this can be specified as `basename(source_url)`'
     mandatory: true
     id: true
     query_param: true # TODO verify
