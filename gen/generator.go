@@ -513,4 +513,20 @@ func main() {
 		log.Fatalf("Error reading changelog: %v", err)
 	}
 	renderTemplate(changelogTemplate, changelogLocation, string(changelog))
+
+	names, err := filepath.Glob("./examples/basic/*/README.md")
+	if err != nil {
+		log.Fatalf("Error listing files: %v", err)
+	}
+
+	for _, fn := range names {
+		base := filepath.Base(filepath.Dir(fn))
+		output := fmt.Sprintf("./templates/guides/%s.md", base)
+
+		content, err := os.ReadFile(fn)
+		if err != nil {
+			log.Fatalf("Error reading file: %v", err)
+		}
+		renderTemplate("./gen/templates/changelog.md.tmpl", output, string(content))
+	}
 }
