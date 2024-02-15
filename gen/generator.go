@@ -521,7 +521,7 @@ func main() {
 
 	for _, fn := range names {
 		base := filepath.Base(filepath.Dir(fn))
-		output := fmt.Sprintf("./templates/guides/%s.md", base)
+		output := fmt.Sprintf("./templates/guides/%s.md.tmpl", base)
 
 		content, err := os.ReadFile(fn)
 		if err != nil {
